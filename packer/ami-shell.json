@@ -1,0 +1,21 @@
+{
+  "variables": {
+    "aws_access_key": "AKIAIF7YCL64HN5VYOTQ",
+    "aws_secret_key": "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"
+  },
+  "builders": [{
+    "type": "amazon-ebs",
+    "region": "ap-northeast-1",
+    "source_ami": "ami-481caf29",
+    "instance_type": "t2.micro",
+    "ssh_username": "ec2-user",
+    "ssh_timeout": "5m",
+    "ami_name": "Packer-{{timestamp}}",
+    "access_key": "{{user `aws_access_key`}}",
+    "secret_key": "{{user `aws_secret_key`}}"
+  }],
+  "provisioners": [{
+    "type": "shell",
+    "inline": ["sudo yum install -y nginx"]
+  }]
+}

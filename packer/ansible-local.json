@@ -1,0 +1,46 @@
+{
+  "variables": {
+    "aws_access_key": "AKIAIF7YCL64HN5VYOTQ",
+    "aws_secret_key": "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",
+    "scripts_dir": "scripts",
+    "ssh_username": "ec2-user"
+  },
+  "builders": [{
+    "type": "amazon-ebs",
+    "region": "ap-northeast-1",
+    "source_ami": "ami-481caf29",
+    "instance_type": "t2.micro",
+    "ssh_username": "ec2-user",
+    "ssh_timeout": "5m",
+    "ami_name": "Packer-ansible-{{timestamp}}",
+    "access_key": "{{user `aws_access_key`}}",
+    "secret_key": "{{user `aws_secret_key`}}"
+  }],
+  "provisioners": [
+    {
+      "type": "shell",
+      "execute_command": "echo {{user `ssh_username`}} | {{ .Vars }} sudo -E -S sh '{{ .Path }}'",
+      "inline": [
+        "mkdir -p /ops/{{user `scripts_dir`}}",
+        "chmod a+w /ops/{{user `scripts_dir`}}"
+      ]
+    },
+    {
+      "type": "file",
+      "source": "{{user `scripts_dir`}}/.",
+      "destination": "/ops/{{user `scripts_dir`}}"
+    },
+    {
+      "type": "shell",
+      "execute_command": "echo {{user `ssh_username`}} | {{ .Vars }} sudo -E -S sh '{{ .Path }}'",
+      "inline": [
+        "bash /ops/{{user `scripts_dir`}}/bootstrap.sh",
+        "bash /ops/{{user `scripts_dir`}}/ansible.sh"
+      ]
+    },
+    {
+      "type": "ansible-local",
+      "playbook_file": "./packer.yml"
+    }
+  ]
+}
