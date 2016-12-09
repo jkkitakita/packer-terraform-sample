@@ -1,5 +1,0 @@
-- hosts: all
-  become: yes
-  tasks:
-    - name: be sure httpd is installed
-      yum: name=httpd state=installed

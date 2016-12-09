@@ -1,0 +1,9 @@
+- hosts: 127.0.0.1
+  become: yes
+  handlers:
+    - name: restart httpd
+      service: name=httpd state=restarted
+  tasks:
+    - name: be sure httpd is installed
+      yum: name=httpd state=installed
+      notify: restart httpd

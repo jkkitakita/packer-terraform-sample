@@ -6,7 +6,7 @@
   "builders": [{
     "type": "amazon-ebs",
     "region": "ap-northeast-1",
-    "source_ami": "ami-481caf29",
+    "source_ami": "ami-bd97fada",
     "instance_type": "t2.micro",
     "ssh_username": "ec2-user",
     "ssh_timeout": "5m",
@@ -36,7 +36,7 @@
     },
     {
       "type": "ansible-local",
-      "playbook_file": "./packer.yml"
+      "playbook_file": "./ansible/packer.yml"
     }
   ]
 }
