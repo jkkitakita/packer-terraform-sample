@@ -1,0 +1,50 @@
+---
+- name: Download WordPress
+  become: yes
+  get_url: url=http://wordpress.org/wordpress-{{ wp_version }}.tar.gz dest=/srv/wordpress-{{ wp_version }}.tar.gz
+           sha256sum="{{ wp_sha256sum }}"
+
+- name: Extract archive
+  become: yes
+#command: chdir=/srv/ /bin/tar xvf wordpress-{{ wp_version }}.tar.gz creates=/srv/wordpress
+  unarchive: src=/srv/wordpress-{{ wp_version }}.tar.gz dest=/srv/ creates=/srv/wordpress
+
+- name: Add group "wordpress"
+  become: yes
+  group: name=wordpress
+
+- name: Add user "wordpress"
+  become: yes
+  user: name=wordpress group=wordpress home=/srv/wordpress/
+
+- name: Fetch random salts for WordPress config
+#local_action: command curl https://api.wordpress.org/secret-key/1.1/salt/
+  get_url: url=https://api.wordpress.org/secret-key/1.1/salt/ 
+  register: "wp_salt"
+  become: no
+  become_method: sudo
+
+- name: MySQL-python is installed
+  pip: name=MySQL-python state=present
+  tags: mysqld
+
+- name: Create WordPress database
+  become: yes
+  mysql_db: name={{ wp_db_name }} state=present
+  tags: mysqld
+
+- name: Create WordPress database user
+  become: yes
+  mysql_user: name={{ wp_db_user }} password={{ wp_db_password }} priv={{ wp_db_name }}.*:ALL host='localhost' state=present
+
+- name: Copy WordPress config file
+  become: yes
+  template: src=wp-config.php dest=/srv/wordpress/
+
+- name: Change ownership of WordPress installation
+  become: yes
+  file: path=/srv/wordpress/ owner=wordpress group=wordpress state=directory recurse=yes setype=httpd_sys_content_t
+
+- name: Start php-fpm Service
+  become: yes
+  service: name=php-fpm state=started enabled=yes
