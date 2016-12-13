@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
+# pip install --upgrade pip
 pip install ansible
+# sudo yum install -y MySQL-python
 
 # Local Variables:
 # mode: Shell-Script

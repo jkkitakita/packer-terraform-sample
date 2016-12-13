@@ -1,17 +1,16 @@
 {
+  "variables": {
+    "scripts_dir": "scripts",
+    "ssh_username": "ec2-user"
+  },
   "builders": [{
     "type": "amazon-ebs",
-    "region": "{{user `aws_region`}}",
-    "source_ami": "{{user `aws_source_ami_id`}}",
-    "instance_type": "{{user `aws_instance_type`}}",
-    "ssh_username": "{{user `ssh_username`}}",
+    "region": "ap-northeast-1",
+    "source_ami": "ami-bd97fada",
+    "instance_type": "t2.micro",
+    "ssh_username": "ec2-user",
     "ssh_timeout": "5m",
-    "ami_name": "Packer-ansible-{{timestamp}}",
-    "tags": {
-      "Name": "aws-{{user `aws_region`}}",
-      "Environment": "{{user `aws_environment`}}",
-      "Release": "Latest"
-    }
+    "ami_name": "Packer-ansible-{{timestamp}}"
   }],
   "provisioners": [
     {
@@ -37,7 +36,7 @@
     },
     {
       "type": "ansible-local",
-      "group_vars": "./ansible/group_vars",
+      "group_vars": "./ansible/group_vars/",
       "playbook_file": "./ansible/site.yml",
       "role_paths": ["./ansible/roles/common", "./ansible/roles/mysql", "./ansible/roles/nginx", "./ansible/roles/php-fpm", "./ansible/roles/wordpress"],
       "staging_directory": "/tmp/packer-provisioner-ansible-local"

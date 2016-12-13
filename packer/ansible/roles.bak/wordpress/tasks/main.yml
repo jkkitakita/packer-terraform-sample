@@ -1,0 +1,14 @@
+- name: Download WordPress
+    get_url:
+      url="url=http://wordpress.org/wordpress-{{ wp_version }}.tar.gz dest=/srv/wordpress-{{ wp_version }}.tar.gz
+          sha256sum="{{ wp_sha256sum }}"
+      dest=/tmp/wordpress.tar.gz
+
+- name: unarchive wordpress file
+   unarchive: 
+    - name: restart httpd
+      service: name=httpd state=restarted
+  tasks:
+    - name: be sure httpd is installed
+      yum: name=httpd state=installed
+      notify: restart httpd

@@ -1,0 +1,11 @@
+dependencies:
+  - { role: apache,
+      basic_auth_name: "test",
+      basic_auth_pass: "testpass"
+    }
+  - { role: mysql,
+      mysql_db_name: "wordpress",
+      mysql_db_user: "wpuser",
+      mysql_db_password: "wppass1234"
+    }
+  - { role: php }

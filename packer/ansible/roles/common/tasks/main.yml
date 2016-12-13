@@ -1,0 +1,29 @@
+---
+- name: Install libselinux-python
+  become: yes
+  yum: name=libselinux-python state=present
+
+- name: Install MySQL-python
+  become: yes
+  yum: name=MySQL-python state=present
+
+- name: Reload ansible_facts
+  setup:
+
+- name: Copy the EPEL repository definition
+  become: yes
+  copy: src=epel.repo dest=/etc/yum.repos.d/epel.repo
+
+- name: Create the GPG key for EPEL
+  copy: src=RPM-GPG-KEY-EPEL-6 dest=/etc/pki/rpm-gpg
+
+- name: Set up iptables rules
+  copy: src=iptables-save dest=/etc/sysconfig/iptables
+  become: yes
+  notify: restart iptables
+
+- name: upgrade pip
+  shell: pip install --upgrade pip
+  become: yes
+  register: result
+  changed_when: '"Requirement already up-to-date" not in result.stdout'
